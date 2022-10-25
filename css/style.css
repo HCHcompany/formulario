@@ -1,0 +1,105 @@
+
+body{
+   background: rgb(0, 161, 93);
+}
+
+#sectit{
+	display: block;
+	margin: 0 auto;
+	width: 500px;
+}
+
+#title_f{
+	transform: translateX(13%);
+	margin-top: 100px;
+	font-size: 40px;
+	color: rgb(255,255,255);
+}
+
+#formulario{
+	border-radius: 10px;
+	background: rgba(0, 0, 0, 0.5);
+	border-color: rgb(255, 255, 255);
+	border-style: groove;
+	width: 500px;
+    height: 450px;
+	display: block;
+	margin: 0 auto;
+	
+}
+
+#titles_textbox{
+	transform: translateY(10px);
+	color: rgb(255, 255, 255);
+	margin-left: 15px;
+}
+
+input{
+    margin-left: 10px;
+    border-radius: 10px;   
+    font-size: 16px;
+    padding-left: 5px;
+}
+
+select{
+    margin-left: 10px;
+    border-radius: 10px;   
+    font-size: 16px;
+    padding-left: 5px;
+}
+
+#content{
+	float: left;
+}
+
+#container{
+	transform: translateY(10px);
+}
+
+#btn_ctrl{
+    transform: translateX(12px);
+    font-size: 16px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+#btn_search{
+    transform: translateX(12px);
+    font-size: 16px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+#search_form{
+	background: rgba(0, 0, 0, 0.5);
+	border-radius: 10px;
+	border-style: groove;
+	width: 500px;
+	height: 200px;
+	display: none;
+    margin: 0 auto;
+    margin-top: 5px;
+}
+
+#control_zone{
+	border-style: solid;
+	border-color: rgb(255, 255, 255, 0.5);
+	height: 35px;
+}
+
+#data_user{
+  width: 80%;
+  font-size: 16px;
+  margin-top: 6px;
+  padding-left: 8px;
+}
+
+#search_data{
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+#td_id_body{
+	color: rgb(255, 255, 255);
+	font-size: 20px;
+}

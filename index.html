@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Ingresar ficha medica</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+<script>
+var srch_open = false;
+var contador = 0;
+var default_user_is_added = false;
+var users = [];
+
+class Usuario{
+     constructor(nombre, apellido, rut, fn, direccion, ciudad, telefono,
+               email, civil, comentarios){
+      this.nombre = nombre;
+      this.apellido = apellido;
+      this.rut = rut;
+      this.fn = fn;
+      this.direccion = direccion;
+      this.ciudad = ciudad;
+      this.telefono = telefono;
+      this.email = email;
+      this.civil = civil;
+      this.comentarios = comentarios;
+     }
+
+     get getNombre(){
+      return this.nombre;
+     }
+
+     get getApellido(){
+      return this.apellido;
+     }
+
+     get getRut(){
+      return this.rut;
+     }
+
+     get getFN(){
+      return this.fn;
+     }
+
+     get getDireccion(){
+        return this.direccion;
+     }
+
+     get getCiudad(){
+        return this.ciudad;
+     }
+
+     get getTelefono(){
+        return this.telefono;
+     }
+
+     get getEmail(){
+        return this.email;
+     }
+
+     get getCivil(){
+        return this.civil;
+     }
+
+     get getComentarios(){
+        return this.comentarios;
+     }
+}
+ 
+function dv(T){
+      var M=0,S=1;
+      for(;T;T=Math.floor(T/10))
+         S=(S+T%10*(9-M++%6))%11;
+      return S?S-1:'k';
+}
+
+function validaRut(rutCompleto){
+      rutCompleto = rutCompleto.replace("‐","-");
+      if (!/^[0-9]+[-|‐]{1}[0-9kK]{1}$/.test( rutCompleto ))
+         return false;
+      var tmp  = rutCompleto.split('-');
+      var digv = tmp[1]; 
+      var rut  = tmp[0];
+      if ( digv == 'K' ) digv = 'k' ;
+      
+      return (dv(rut) == digv );
+}
+
+function validar_tel(tel){
+  if(tel.includes("+56")){
+    return 4; //Tiene numero verificador.
+  }
+
+  var expresionRegular1=/^([0-9]+){9}$/;
+  var expresionRegular2=/\s/;
+  if(tel.length == 0){
+     return 1; //Campo vacio.
+  }else if(expresionRegular2.test(tel)){
+     return 2; //Espacios en blanco.
+  }else if(!expresionRegular1.test(tel)){
+     return 3; //Numero incorrecto.
+  }
+  return 0; //Todo correcto.
+}
+
+function validarEmail(valor) {
+   var re=/^([\da-z_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/
+   if(!re.exec(valor)){
+      return 1;
+   }else{
+        return 0;
+   }
+}
+
+function existsUser(new_usuario){
+   if(users.length > 0){
+        for(var x = 0; x < users.length; x++){
+           var user = users[x];
+           if((user.getNombre == new_usuario.getNombre && user.getApellido == new_usuario.getApellido &&
+             user.getRut == new_usuario.getRut) || user.getRut == new_usuario.getRut /*&& user.getEmail == new_usuario.getEmail && user.getTelefono == new_usuario.getTelefono*/){
+             if(user.getRut == new_usuario.getRut){
+               alert("El usuario ingresado tiene un RUT que ya se encuentra registrado.");
+             }
+             return x;
+           }
+        }
+   }
+   return (-1);
+}
+
+function save_func(){
+    var nombre = document.getElementById("name_us");
+    var apellido = document.getElementById("appe_us");
+    var rut = document.getElementById("rut_us");
+    var fn = document.getElementById("fechn_us");
+    var direccion = document.getElementById("direccion_us");
+    var ciudad = document.getElementById("ciudad_us");
+    var telefono = document.getElementById("telefono_us");
+    var email = document.getElementById("email_us");
+    var civil = document.getElementById("civil_us");
+    var comentarios = document.getElementById("comen_us");
+    
+    if(nombre.value.length > 0){
+       if(apellido.value.length > 0){
+          if(rut.value.length > 0){
+             if(validaRut(rut.value)){
+                if(fn.value.length > 0){
+                   if(direccion.value.length > 0){
+                      if(ciudad.value.length > 0){
+                         var request = validar_tel(telefono.value);
+                         if(request == 0){
+                           if(email.value.length > 0){
+                               if(validarEmail(email.value) == 0){
+                                  if(civil.value.length > 0){
+                                     var nombre_us = nombre.value;
+                                     var apellido_us = apellido.value;
+                                     var rut_us = rut.value;
+                                     var fn_us = fn.value;
+                                     var direccion_us = direccion.value;
+                                     var ciudad_us = ciudad.value;
+                                     var telefono_us = telefono.value;
+                                     var email_us = email.value;
+                                     var civil_us = civil.value;
+                                     var comentarios_us = comentarios.value;
+                                     
+                                     var new_usuario = new Usuario(nombre_us, apellido_us, rut_us, fn_us,                        direccion_us, ciudad_us, telefono_us, email_us,                                                                   civil_us, comentarios_us);
+                                     var exists = existsUser(new_usuario);
+                                     if(exists != (-1)){
+                                        var request_ = confirm("El usuario ya existe, desea reemplazarlo?");
+                                        if(request_){
+                                           users[exists] = new_usuario;
+                                           clean_func();
+                                           update_list();
+                                           alert("La informacion del usuario ha sido reemplazada.");
+                                        }else{
+                                          clean_func();
+                                          update_list();
+                                          alert("Los campos han sido limpiados.")
+                                        }
+                                     }else{
+                                          users[contador] = new_usuario;
+                                          contador++;
+                                          clean_func();
+                                          update_list();
+                                          alert("Se ha añadido nuevo usuario (Ficha medica).");
+                                     }
+                                  }else{
+                                    alert("Por favor ingrese estado civil.");
+                                  }
+                               }else{
+                                alert("Por favor ingrese un email correcto.");
+                               }
+                           }else{
+                               alert("Por favor ingrese correo electronico.");
+                           }
+                         }else{
+                           if(request == 1){
+                               alert("Por favor ingrese un numero.");
+                           }else if(request == 2){
+                               alert("El numero de telefono no debe contener espacios.");
+                           }else if(request == 3){
+                               alert("Por favor ingrese un numero de telefono correcto.");
+                           }else if(request == 4){
+                               alert("Omita el codigo validador (+56).");
+                           }else{
+                              alert("Error desconocido.");
+                              alert("La pagina se cerrara.");
+                              close_func();
+                           }
+                         }
+                      }else{
+                        alert("Por favor ingrese una ciudad.");
+                      }
+                   }else{
+                       alert("Por favor ingrese una direccion.");
+                   }
+                }else{
+                   alert("Fecha de nacimiento este en blanco.");
+                }
+             }else{
+                alert("Por favor ingrese un RUT correcto.");
+             }
+          }else{
+            alert("Por favor ingrese un RUT.")
+          }
+       }else{
+          alert("Por favor ingrese un apellido.");
+       }
+    }else{
+       alert("Por favor ingrese un nombre.");
+    }
+}
+
+function clean_func(){
+    var nombre = document.getElementById("name_us");
+    var apellido = document.getElementById("appe_us");
+    var rut = document.getElementById("rut_us");
+    var fn = document.getElementById("fechn_us");
+    var direccion = document.getElementById("direccion_us");
+    var ciudad = document.getElementById("ciudad_us");
+    var telefono = document.getElementById("telefono_us");
+    var email = document.getElementById("email_us");
+    var civil = document.getElementById("civil_us");
+    var comentarios = document.getElementById("comen_us");
+
+    nombre.value = "";
+    apellido.value = "";
+    rut.value = "";
+    fn.value = "";
+    direccion.value = "";
+    ciudad.value = "";
+    telefono.value = "";
+    email.value = "";
+    civil.value = "";
+    comentarios.value = "";
+} 
+
+function close_func(){
+   alert("Gracias por preferirnos :)");
+    window.close();
+}
+
+function clean_list_users(defaultu){
+   var table = document.getElementById("tbody_");
+    table.innerHTML = "";
+    if(defaultu && !default_user_is_added){
+       load_default_user();
+    }
+}
+
+function add_user_to_list(user){
+    var table = document.getElementById("tbody_");
+    table.innerHTML += "<tr id=\"tr_id_body\">\n" +
+                       "  <td id=\"td_id_body\">" + user.getNombre + " </td>\n" +
+                       "  <td id=\"td_id_body\">" + user.getApellido + " </td>\n" +
+                       "  <td id=\"td_id_body\">" + user.getRut + " </td>\n";
+                       "</tr>\n"
+}
+
+function load_default_user(){
+   var user = new Usuario("Jonathann", "Vasquez", "20544909-4", "31-05-2001",
+                           "Quinamavida S/N", "Linares", "933610022", "jonathannvasqueztorres@gmail.com",
+                           "Soltero (a)", "Soy autor de este sitio.");
+   users[contador] = user;
+   contador++;
+   default_user_is_added = true;
+}
+
+function load_all_users(){
+    var table = document.getElementById("tbody_");
+    if(users.length > 0){
+       for(var x = 0; x < users.length; x++){
+            add_user_to_list(users[x]);
+       }
+    }
+}
+
+function update_list(){
+   clean_list_users(true);
+   load_all_users();
+}
+
+function load_users_search(text){
+   var mod = 0;
+    if(users.length > 0){
+       for(var x = 0; x < users.length; x++){
+            var user = users[x];
+            if(user.getApellido == text){
+              if(mod == 0){
+                clean_list_users(false);
+                mod = 1;
+              }
+              add_user_to_list(user);
+            }
+       }
+
+       if(mod == 0){
+           alert("No hay coincidencias.");
+           update_list();
+       }
+    }else{
+       alert("No hay usuarios registrados.");
+       update_list();
+    }
+}
+
+function search_func(){
+    var form = document.getElementById("search_form");
+    var btn_oc = document.getElementById("btn_search");
+
+    if(form.style.display == "none"){
+      form.style.display = "block";
+      btn_oc.innerHTML = "Cerrar busqueda";
+      load_all_users();
+    }else{
+      form.style.display = "none";
+      btn_oc.innerHTML = "Buscar usuarios";
+      clean_list_users(true);
+    }
+}
+
+function search_data(){
+   var val = document.getElementById("data_user").value;
+   if(val.length > 0){
+       load_users_search(val);
+   }else{
+      update_list();
+   }
+}      
+</script>
+</head>
+
+<body>
+   <section id="sectit">
+   	   <h1 id="title_f">Ingresar ficha medica</h1>
+   </section>
+
+   <section id="formulario">
+   	  <!--Nombre apellido-->
+   	  <div id="container">
+   	  	<div id="content">
+   	  	   <p class="tit_name" id="titles_textbox">Ingrese Nombre:</p>
+   	       <input type="text" id = "name_us" name="name_us">
+   	  	</div>
+   	    
+   	    <div id="content">
+   	       <p class="tit_name" id="titles_textbox">Ingrese Apellido:</p>
+   	       <input type="text" id = "appe_us" name="rut_us">
+   	    </div>
+   	  </div>
+      
+      <!--RUT, Fecha nac-->
+      <div id="container">
+   	  	<div id="content">
+   	  	   <p class="tit_name" id="titles_textbox">Ingrese RUT:</p>
+   	       <input type="text" id = "rut_us" name="rut_us">
+   	  	</div>
+   	    
+   	    <div id="content">
+   	       <p class="tit_name" id="titles_textbox">Ingrese fecha de nacimiento:</p>
+   	       <input type="date" id="fechn_us" name="fechn_us" step="1" min="1880-01-01" max="2022-12-31" value="2022-10-25">
+   	    </div>
+   	  </div>
+      
+      <!--Direccion, ciudad-->
+   	  <div id="container">
+   	  	<div id="content">
+   	  	   <p class="tit_name" id="titles_textbox">Ingrese direccion:</p>
+   	       <input type="text" id = "direccion_us" name="direccion_us">
+   	  	</div>
+   	    
+   	    <div id="content">
+   	       <p class="tit_name" id="titles_textbox">Ingrese ciudad:</p>
+   	       <input type="text" id = "ciudad_us" name="ciudad_us">
+   	    </div>
+   	  </div>
+      
+      <!--Telefono, email-->
+   	  <div id="container">
+   	  	<div id="content">
+   	  	   <p class="tit_name" id="titles_textbox">Ingrese telefono:</p>
+   	       <input type="text" id = "telefono_us" name="telefono_us">
+   	  	</div>
+   	    
+   	    <div id="content">
+   	       <p class="tit_name" id="titles_textbox">Ingrese email:</p>
+   	       <input type="text" id = "email_us" name="email_us">
+   	    </div>
+   	  </div>
+      
+      <!--Estado civil, comentarios-->
+   	  <div id="container">
+   	  	<div id="content">
+   	  	   <p class="tit_name" id="titles_textbox">Ingrese estado civil:</p>
+   	  	   <select id = "civil_us">
+   	  	   	 <option>Soltero (a)</option>
+   	  	   	 <option>Casado (a)</option>
+   	  	   </select>
+   	  	</div>
+   	    
+   	    <div id="content">
+   	       <p class="tit_name" id="titles_textbox">Ingrese comentarios:</p>
+   	       <input type="text" id = "comen_us" name="comen_us">
+   	    </div>
+   	  </div>
+
+   	  <!--Control-->
+   	  <div id="container">
+   	  	 <div id="content">
+   	  	 	 <button id="btn_ctrl" onclick="save_func()">Guardar</button>
+   	  	 	 <button id="btn_ctrl" onclick="clean_func()">Limpiar</button>
+   	  	 	 <button id="btn_ctrl" onclick="close_func()">
+   	  	 	 Cerrar</button>
+   	  	 	 <button id="btn_search" onclick="search_func()">Buscar usuarios</button>
+   	  	 </div>
+   	  </div>
+   	  <br>
+   </section>
+
+   <section id="search_form">
+   	  <div id="control_zone">
+   	  	<input type="text" id="data_user" name="data_user">
+   	  	<button id="search_data" onclick="search_data()">buscar</button>
+   	  </div>
+
+   	  <div id="view_zone">
+   	  	<table id="table_">
+   	  		<tbody id="tbody_">
+   	  			<tr>
+   	  				<td>gola</td>
+   	  			</tr>
+   	  		</tbody>
+   	  	</table>
+         
+   	  </div>
+
+   </section>
+</body>
+</html>
